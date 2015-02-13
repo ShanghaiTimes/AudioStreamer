@@ -55,6 +55,8 @@ NSString * const AS_AUDIO_STREAMER_FAILED_STRING = @"Audio playback failed";
 NSString * const AS_NETWORK_CONNECTION_FAILED_STRING = @"Network connection failed";
 NSString * const AS_AUDIO_BUFFER_TOO_SMALL_STRING = @"Audio packets are larger than kAQDefaultBufSize.";
 
+
+
 @interface AudioStreamer ()
 @property (readwrite) AudioStreamerState state;
 @property (readwrite) AudioStreamerState laststate;
@@ -690,9 +692,9 @@ static void ASReadStreamCallBack
 			NSDictionary *sslSettings =
 				[NSDictionary dictionaryWithObjectsAndKeys:
 					(NSString *)kCFStreamSocketSecurityLevelNegotiatedSSL, kCFStreamSSLLevel,
-					[NSNumber numberWithBool:YES], kCFStreamSSLAllowsExpiredCertificates,
+					/*[NSNumber numberWithBool:YES], kCFStreamSSLAllowsExpiredCertificates,
 					[NSNumber numberWithBool:YES], kCFStreamSSLAllowsExpiredRoots,
-					[NSNumber numberWithBool:YES], kCFStreamSSLAllowsAnyRoot,
+					[NSNumber numberWithBool:YES], kCFStreamSSLAllowsAnyRoot, */
 					[NSNumber numberWithBool:NO], kCFStreamSSLValidatesCertificateChain,
 					[NSNull null], kCFStreamSSLPeerName,
 				nil];
@@ -757,6 +759,32 @@ static void ASReadStreamCallBack
 // This method contains bits of the "main" function from Apple's example in
 // AudioFileStreamExample.
 //
+- (BOOL)setUpAudioSession
+{
+    BOOL success = NO;
+    NSError *error = nil;
+    
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    
+    success = [session setCategory:AVAudioSessionCategoryPlayback error:&error];
+    if (!success) {
+        NSLog(@"%@ Error setting category: %@",
+              NSStringFromSelector(_cmd), [error localizedDescription]);
+        
+        // Exit early
+        return success;
+    }
+    
+    success = [session setActive:YES error:&error];
+    if (!success) {
+        NSLog(@"%@", [error localizedDescription]);
+    }
+    
+    return success;
+}
+
+
+
 - (void)startInternal
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -780,19 +808,35 @@ static void ASReadStreamCallBack
 		// Set the audio session category so that we continue to play if the
 		// iPhone/iPod auto-locks.
 		//
+        // Replace AudioSessionInitialze. See (BOOL)setUpAudioSession
+        
+      
+        /*
 		AudioSessionInitialize (
 			NULL,                          // 'NULL' to use the default (main) run loop
 			NULL,                          // 'NULL' to use the default run loop mode
 			ASAudioSessionInterruptionListener,  // a reference to your interruption callback
 			self                       // data to pass to your interruption listener callback
 		);
-		UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
+         */
+		//UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
+        
+        AVAudioSession *session = [AVAudioSession sharedInstance];
+        
+        NSError *setCategoryError = nil;
+        if (![session setCategory:AVAudioSessionCategoryPlayback
+                      withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                            error:&setCategoryError]) {
+            // handle error
+        }
+        /*
 		AudioSessionSetProperty (
 			kAudioSessionProperty_AudioCategory,
 			sizeof (sessionCategory),
 			&sessionCategory
 		);
 		AudioSessionSetActive(true);
+        */
 	#endif
 	
 		// initialize a mutex and condition so that we can block on buffers in use.
@@ -882,8 +926,9 @@ cleanup:
 		pthread_mutex_destroy(&queueBuffersMutex);
 		pthread_cond_destroy(&queueBufferReadyCondition);
 
-#if TARGET_OS_IPHONE			
-		AudioSessionSetActive(false);
+#if TARGET_OS_IPHONE	
+        [[AVAudioSession sharedInstance] setActive:NO error:nil];
+		//AudioSessionSetActive(false);
 #endif
 
 		[httpHeaders release];
@@ -1331,7 +1376,10 @@ cleanup:
 		}
 		
 		UInt8 bytes[kAQDefaultBufSize];
-		CFIndex length;
+		
+        CFIndex length;
+        
+        
 		@synchronized(self)
 		{
 			if ([self isFinishing] || !CFReadStreamHasBytesAvailable(stream))
@@ -1358,7 +1406,8 @@ cleanup:
 
 		if (discontinuous)
 		{
-			err = AudioFileStreamParseBytes(audioFileStream, length, bytes, kAudioFileStreamParseFlag_Discontinuity);
+            /*! @brief This cast on length is <b>UInt32</b>, changed from the original of <b>CFIndex length</b>. */
+			err = AudioFileStreamParseBytes(audioFileStream,(UInt32)length, bytes, kAudioFileStreamParseFlag_Discontinuity);
 			if (err)
 			{
 				[self failWithErrorCode:AS_FILE_STREAM_PARSE_BYTES_FAILED];
@@ -1367,7 +1416,8 @@ cleanup:
 		}
 		else
 		{
-			err = AudioFileStreamParseBytes(audioFileStream, length, bytes, 0);
+             /*! @brief This cast on length is <b>UInt32</b>, changed from the original of <b>CFIndex length</b>. */
+			err = AudioFileStreamParseBytes(audioFileStream, (UInt32)length, bytes, 0);
 			if (err)
 			{
 				[self failWithErrorCode:AS_FILE_STREAM_PARSE_BYTES_FAILED];
@@ -1402,11 +1452,11 @@ cleanup:
 
 		// enqueue buffer
 		AudioQueueBufferRef fillBuf = audioQueueBuffer[fillBufferIndex];
-		fillBuf->mAudioDataByteSize = bytesFilled;
+		fillBuf->mAudioDataByteSize = (unsigned int)bytesFilled;
 		
 		if (packetsFilled)
 		{
-			err = AudioQueueEnqueueBuffer(audioQueue, fillBuf, packetsFilled, packetDescs);
+			err = AudioQueueEnqueueBuffer(audioQueue, fillBuf, (unsigned int)packetsFilled, packetDescs);
 		}
 		else
 		{
@@ -1995,7 +2045,8 @@ cleanup:
 	}
 	else if (inInterruptionState == kAudioSessionEndInterruption) 
 	{
-		AudioSessionSetActive( true );
+        [[AVAudioSession sharedInstance] setActive:YES error:nil];
+		//AudioSessionSetActive( true );
 		
 		if ([self isPaused] && pausedByInterruption) {
 			[self pause]; // this is actually resume

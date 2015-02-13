@@ -23,6 +23,7 @@
 
 #if TARGET_OS_IPHONE			
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVAudioSession.h>
 #else
 #import <Cocoa/Cocoa.h>
 #endif // TARGET_OS_IPHONE
@@ -192,6 +193,8 @@ extern NSString * const ASStatusChangedNotification;
 - (BOOL)isAborted; // return YES if streaming halted due to error (AS_STOPPING + AS_STOPPING_ERROR)
 - (void)seekToTime:(double)newSeekTime;
 - (double)calculatedBitRate;
+
+- (BOOL)setUpAudioSession;
 
 @end
 

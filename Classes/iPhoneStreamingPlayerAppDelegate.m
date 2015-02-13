@@ -30,9 +30,12 @@
 @synthesize viewController;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
-    // Override point for customization after app launch    
-    [window addSubview:viewController.view];
-    [window makeKeyAndVisible];
+    // Override point for customization after app launch
+    
+    /*! @brief This line is changed to the one following, trying to avoid root controller error. Which it doesn't */
+    //[window addSubview:viewController.view];
+   // [self.window setRootViewController:viewController];
+   // [window makeKeyAndVisible];
 	
 	[viewController buttonPressed:nil];
 }

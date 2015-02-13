@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="5aD-tz-zE8">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+    </dependencies>
+    <scenes>
+        <!--I Phone Streaming Player View Controller-->
+        <scene sceneID="Ujh-BP-L6S">
+            <objects>
+                <viewController id="5aD-tz-zE8" customClass="iPhoneStreamingPlayerViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="bZA-bp-iA4"/>
+                        <viewControllerLayoutGuide type="bottom" id="6Yc-jg-fXX"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="hi6-fF-YDi">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tgc-ZO-EQB">
+                                <rect key="frame" x="160" y="390" width="280" height="55"/>
+                                <color key="backgroundColor" red="0.8507749496" green="0.85883946570000003" blue="0.86690398189999995" alpha="1" colorSpace="calibratedRGB"/>
+                            </view>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" text="Volume:" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="ljb-om-KLp">
+                                <rect key="frame" x="160" y="361" width="280" height="21"/>
+                                <fontDescription key="fontDescription" type="system" size="system"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="50" minValue="0.0" maxValue="100" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xYJ-tg-xhJ">
+                                <rect key="frame" x="158" y="286" width="284" height="29"/>
+                                <connections>
+                                    <action selector="sliderMoved:" destination="5aD-tz-zE8" eventType="valueChanged" id="UQf-Yl-Kcn"/>
+                                </connections>
+                            </slider>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" text="Time Played:" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="wxv-DP-kam">
+                                <rect key="frame" x="160" y="257" width="280" height="21"/>
+                                <fontDescription key="fontDescription" type="system" size="system"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="omb-B5-OXh">
+                                <rect key="frame" x="264" y="176" width="72" height="73"/>
+                                <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
+                                <state key="normal" image="playbutton.png">
+                                    <color key="titleColor" red="0.19607843" green="0.30980393000000001" blue="0.52156866000000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="buttonPressed:" destination="5aD-tz-zE8" eventType="touchUpInside" id="PY2-2Z-UeX"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="http://shoutmedia.abc.net.au:10326" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6Mn-tR-pAc">
+                                <rect key="frame" x="160" y="128" width="280" height="31"/>
+                                <fontDescription key="fontDescription" type="system" size="system"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="URL"/>
+                                <connections>
+                                    <outlet property="delegate" destination="5aD-tz-zE8" id="edw-v8-pg5"/>
+                                </connections>
+                            </textField>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" text="Download URL:" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="5re-km-t5t">
+                                <rect key="frame" x="160" y="99" width="280" height="21"/>
+                                <fontDescription key="fontDescription" type="system" size="system"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="600" height="600"/>
+                    <connections>
+                        <outlet property="button" destination="omb-B5-OXh" id="wcf-SG-Blf"/>
+                        <outlet property="downloadSourceField" destination="6Mn-tR-pAc" id="ybc-lm-Hrd"/>
+                        <outlet property="positionLabel" destination="wxv-DP-kam" id="sW1-4K-yXc"/>
+                        <outlet property="progressSlider" destination="xYJ-tg-xhJ" id="Keb-7M-tPq"/>
+                        <outlet property="volumeSlider" destination="tgc-ZO-EQB" id="JIY-rT-c9Y"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="G25-EF-oXd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="269" y="442"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="playbutton.png" width="64" height="64"/>
+    </resources>
+</document>
